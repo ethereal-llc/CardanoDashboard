@@ -1,6 +1,6 @@
-import CardanoAPI from "./cardanoApi.ts";
-import { calculateUptime } from "./metricsFormatter.ts";
-import { getMetricsFromLast7Days } from "./metricsDb.ts";
+import CardanoAPI from "./cardanoApi";
+import { calculateUptime } from "./metricsFormatter";
+import { getMetricsFromLast7Days } from "./metricsDb";
 
 const CARDANO_GENESIS_DATE = "2017-09-23"; // Cardano mainnet launch
 
@@ -22,8 +22,8 @@ export async function fetchCardanoMetrics() {
 			]);
 
 		// Fetch separately as it requires more time and more API calls
-		const cardanoActivityMetrics =
-			await cardanoApi.getCardanoActivityMetrics();
+		//const cardanoActivityMetrics =
+		//	await cardanoApi.getCardanoActivityMetrics();
 
 		// Calculate uptime
 		const uptime = calculateUptime(CARDANO_GENESIS_DATE);
@@ -46,8 +46,10 @@ export async function fetchCardanoMetrics() {
 			totalSupply: Number(networkInfo?.supply.total) || 0, // Total supply
 			treasuryAda: Number(networkInfo?.supply.treasury) || 0,
 			activeStakePools: activePools?.totalActivePools || 0,
-			transactions24h: cardanoActivityMetrics?.transactionCount || 0,
-			activeWallets24h: cardanoActivityMetrics?.activeWalletCount || 0,
+			transactions24h: 0,
+			activeWallets24h: 0,
+			// transactions24h: cardanoActivityMetrics?.transactionCount || 0,
+			// activeWallets24h: cardanoActivityMetrics?.activeWalletCount || 0,
 			epoch: currentEpoch?.epoch_no || 0,
 			adaPrice: adaPrice?.cardano.usd || 0.87,
 		};

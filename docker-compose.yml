@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: cardano-dashboard-mongo
+    restart: unless-stopped
+    command: [ "--replSet", "rs0", "--bind_ip_all" ]
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+    #ports:
+    #  - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/${MONGO_DATABASE}?authSource=admin
+      BLOCKFROST_PROJECT_ID: ${BLOCKFROST_PROJECT_ID}
+      MAESTRO_API_KEY: ${MAESTRO_API_KEY}
+      CARDANOSCAN_API_KEY: ${CARDANOSCAN_API_KEY}
+      X_API_KEY: ${X_API_KEY}
+      X_API_SECRET: ${X_API_SECRET}
+      X_ACCESS_TOKEN: ${X_ACCESS_TOKEN}
+      X_ACCESS_TOKEN_SECRET: ${X_ACCESS_TOKEN_SECRET}
+      CRON_DAILY_TWEET: ${CRON_DAILY_TWEET}
+      CRON_WEEKLY_TWEET: ${CRON_WEEKLY_TWEET}
+    #command: run-once
+
+volumes:
+  mongo-data:

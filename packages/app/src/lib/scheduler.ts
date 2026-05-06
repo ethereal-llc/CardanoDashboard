@@ -7,6 +7,7 @@ import {
 import cron from "node-cron";
 import dotenv from "dotenv";
 import { storeCardanoMetrics } from "./metricsDb";
+
 dotenv.config({ path: require("path").resolve(__dirname, "../../.env") });
 
 // Manual trigger function for testing
@@ -91,30 +92,21 @@ export async function triggerWeeklyTweet() {
 	}
 }
 
-// Daily tweet at 15:00 CET
-cron.schedule(
-	"0 15 * * *",
-	() => {
-		triggerDailyTweet();
-	},
-	{
-		timezone: "Europe/Paris",
-	}
-);
+const CRON_DAILY_TWEET = process.env.CRON_DAILY_TWEET!;
+const CRON_WEEKLY_TWEET = process.env.CRON_WEEKLY_TWEET!;
 
-// Weekly comparison tweet every Friday at 17:00 CET
-cron.schedule(
-	"0 17 * * 5",
-	() => {
-		triggerWeeklyTweet();
-	},
-	{
-		timezone: "Europe/Paris",
-	}
-);
+// Daily tweet at 15:00 CET - "0 15 * * *"
+cron.schedule(CRON_DAILY_TWEET, () => {
+	triggerDailyTweet();
+});
+
+// Weekly comparison tweet every Friday at 17:00 CET - "0 17 * * 5"
+cron.schedule(CRON_WEEKLY_TWEET, () => {
+	triggerWeeklyTweet();
+});
 
 console.log(
-	"Scheduler started. Daily tweet at 15:00 CET, Weekly comparison at 17:00 CET on Fridays (Europe/Paris timezone)."
+	`Scheduler started. Daily tweet at ${CRON_DAILY_TWEET} UTC, Weekly comparison at  ${CRON_DAILY_TWEET} UTC.`
 );
 
 // Allow manual run for testing
