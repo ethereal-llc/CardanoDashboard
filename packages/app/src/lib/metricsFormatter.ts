@@ -61,9 +61,7 @@ export function createTweetContent(metrics) {
 		(treasuryAda / 1000000) * adaPrice
 	)})
 🖥️ Active Stake Pools: ${formatNumber(activeStakePools)}
-⏳ Epoch: ${epoch}
-
-Collaboration with @GranADASwiss`;
+⏳ Epoch: ${epoch}`;
 }
 
 export function calculatePercentageChange(current, previous) {
@@ -97,6 +95,6 @@ export function createWeeklyComparisonTweet(changes) {
 🔒 Staked $ADA: ${formatChange(changes.stakedAda)}
 🏛️ Treasury: ${formatChange(changes.treasuryAda)}
 🖥️ Active Stake Pools: ${formatChange(changes.activeStakePools)}
-🪙 $ADA Price: ${formatChange(changes.adaPrice)}
+🪙 ADA Price$: ${formatChange(changes.adaPrice)}
 `;
 }
