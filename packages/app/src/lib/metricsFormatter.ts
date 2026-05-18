@@ -39,6 +39,8 @@ export function createTweetContent(metrics) {
 		totalSupply,
 		treasuryAda,
 		activeStakePools,
+		transactions24h,
+		activeWallets24h,
 		adaPrice,
 		epoch,
 	} = metrics;
@@ -61,6 +63,8 @@ export function createTweetContent(metrics) {
 		(treasuryAda / 1000000) * adaPrice
 	)})
 🖥️ Active Stake Pools: ${formatNumber(activeStakePools)}
+📊 Transactions: ${formatNumber(transactions24h)}
+📍 Active Addresses: ${formatNumber(activeWallets24h)}
 ⏳ Epoch: ${epoch}`;
 }
 
@@ -95,6 +99,8 @@ export function createWeeklyComparisonTweet(changes) {
 🔒 Staked $ADA: ${formatChange(changes.stakedAda)}
 🏛️ Treasury: ${formatChange(changes.treasuryAda)}
 🖥️ Active Stake Pools: ${formatChange(changes.activeStakePools)}
+📊 Transactions: ${formatChange(changes.transactions)}
+📍 Active Addresses: ${formatChange(changes.activeWallets24h)}
 🪙 ADA Price$: ${formatChange(changes.adaPrice)}
 `;
 }

@@ -7,14 +7,16 @@ import {
 const BLOCKFROST_BASE_URL = "https://cardano-mainnet.blockfrost.io/api/v0";
 const MAESTRO_BASE_URL = "https://mainnet.gomaestro-api.org/v1";
 const CARDANOSCAN_BASE_URL = "https://api.cardanoscan.io/api/v1";
+const ADASTATS_INFO_BASE_URL = "https://adastats.info/public-api/v1";
 
 class CardanoAPI {
 	blockfrostClient;
 	axiosBlockfrostClient;
 	axiosMaestroClient;
 	axiosCardanoScanClient;
+	axiosAdastatsClient;
 
-	constructor(projectId, maestroApiKey, cardanoScanApiKey) {
+	constructor(projectId, maestroApiKey, cardanoScanApiKey, adastatsApiKey) {
 		this.blockfrostClient = new BlockFrostAPI({
 			projectId: projectId,
 			requestTimeout: 10000,
@@ -37,6 +39,13 @@ class CardanoAPI {
 			baseURL: CARDANOSCAN_BASE_URL,
 			headers: {
 				apiKey: cardanoScanApiKey,
+				"Content-Type": "application/json",
+			},
+		});
+		this.axiosAdastatsClient = axios.create({
+			baseURL: ADASTATS_INFO_BASE_URL,
+			headers: {
+				"Public-Api-Key": adastatsApiKey,
 				"Content-Type": "application/json",
 			},
 		});
@@ -96,6 +105,33 @@ class CardanoAPI {
 			return cardanoEntry ? cardanoEntry.tvl : null;
 		} catch (error) {
 			console.error("Error fetching DeFi TVL:", error);
+			throw error;
+		}
+	}
+
+	async getCardanoActivityMetricsFromAdaStats(): Promise<{
+		currentEpoch: number;
+		transactionCount: number;
+		activeWalletCount: number;
+	}> {
+		try {
+			let currentEpoch = 0;
+			let transactionCount = 0;
+			let activeWalletCount = 0;
+
+			const response = await this.axiosAdastatsClient.get(
+				"/daily-metrics"
+			);
+			currentEpoch = response.data?.currentEpoch ?? 0;
+			transactionCount = response.data?.transactionCount ?? 0;
+			activeWalletCount = response.data?.activeWalletCount ?? 0;
+
+			return { currentEpoch, transactionCount, activeWalletCount };
+		} catch (error) {
+			console.error(
+				"Error fetching activity metrics from adastats:",
+				error
+			);
 			throw error;
 		}
 	}

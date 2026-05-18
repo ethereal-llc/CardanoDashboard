@@ -8,7 +8,8 @@ export async function fetchCardanoMetrics() {
 	const cardanoApi = new CardanoAPI(
 		process.env.BLOCKFROST_PROJECT_ID,
 		process.env.MAESTRO_API_KEY,
-		process.env.CARDANOSCAN_API_KEY
+		process.env.CARDANOSCAN_API_KEY,
+		process.env.ADASTATS_API_KEY
 	);
 
 	try {
@@ -21,9 +22,8 @@ export async function fetchCardanoMetrics() {
 				cardanoApi.getTVL(),
 			]);
 
-		// Fetch separately as it requires more time and more API calls
-		//const cardanoActivityMetrics =
-		//	await cardanoApi.getCardanoActivityMetrics();
+		const cardanoActivityMetrics =
+			await cardanoApi.getCardanoActivityMetricsFromAdaStats();
 
 		// Calculate uptime
 		const uptime = calculateUptime(CARDANO_GENESIS_DATE);
@@ -46,11 +46,12 @@ export async function fetchCardanoMetrics() {
 			totalSupply: Number(networkInfo?.supply.total) || 0, // Total supply
 			treasuryAda: Number(networkInfo?.supply.treasury) || 0,
 			activeStakePools: activePools?.totalActivePools || 0,
-			transactions24h: 0,
-			activeWallets24h: 0,
-			// transactions24h: cardanoActivityMetrics?.transactionCount || 0,
-			// activeWallets24h: cardanoActivityMetrics?.activeWalletCount || 0,
-			epoch: currentEpoch?.epoch_no || 0,
+			transactions24h: cardanoActivityMetrics?.transactionCount || 0,
+			activeWallets24h: cardanoActivityMetrics?.activeWalletCount || 0,
+			epoch:
+				currentEpoch?.epoch_no ||
+				cardanoActivityMetrics?.currentEpoch ||
+				0,
 			adaPrice: adaPrice?.cardano.usd || 0.87,
 		};
 
