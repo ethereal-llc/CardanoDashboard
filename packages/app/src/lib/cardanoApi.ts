@@ -124,7 +124,17 @@ class CardanoAPI {
 			);
 			currentEpoch = response.data?.currentEpoch ?? 0;
 			transactionCount = response.data?.transactionCount ?? 0;
-			activeWalletCount = response.data?.activeWalletCount ?? 0;
+			activeWalletCount = response.data?.activeAddresses ?? 0;
+
+			if (
+				currentEpoch === 0 ||
+				transactionCount === 0 ||
+				activeWalletCount === 0
+			) {
+				throw new Error(
+					`Invalid response from adastats: ${currentEpoch}, ${transactionCount}, ${activeWalletCount}`
+				);
+			}
 
 			return { currentEpoch, transactionCount, activeWalletCount };
 		} catch (error) {
